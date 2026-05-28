@@ -1,0 +1,60 @@
+{
+  "name": "植物生活记录",
+  "location": {
+    "city": "深圳",
+    "latitude": 22.5431,
+    "longitude": 114.0579,
+    "timezone": "Asia/Shanghai"
+  },
+  "weather": {
+    "forecastUrl": "https://api.open-meteo.com/v1/forecast?latitude=22.5431&longitude=114.0579&timezone=Asia%2FShanghai&current=temperature_2m,relative_humidity_2m,weather_code",
+    "airQualityUrl": "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=22.5431&longitude=114.0579&timezone=Asia%2FShanghai&current=us_aqi"
+  },
+  "push": {
+    "recommendedTime": "08:00",
+    "barkMessageTemplate": "今天有 {count} 个阳台养护任务：{tasks}",
+    "notes": "Bark 推送建议由外部定时 agent 执行。静态网页本身不能可靠后台定时推送。"
+  },
+  "plants": [
+    {
+      "id": "trachelospermum",
+      "name": "络石",
+      "waterEveryDays": 2,
+      "feedEveryDays": 14,
+      "repotAfterDays": 21,
+      "catSafety": "ASPCA 非毒性；仍不建议长期啃食"
+    },
+    {
+      "id": "dendrobium",
+      "name": "泼墨石斛",
+      "waterEveryDays": 3,
+      "feedEveryDays": 21,
+      "repotAfterDays": 60,
+      "catSafety": "相对安全；避免猫啃植料和肥料"
+    },
+    {
+      "id": "lemon",
+      "name": "台湾香水柠檬",
+      "waterEveryDays": 3,
+      "feedEveryDays": 30,
+      "repotAfterDays": 21,
+      "catSafety": "需隔离；柠檬精油和果皮对猫不友好"
+    },
+    {
+      "id": "mint",
+      "name": "薄荷",
+      "waterEveryDays": 1,
+      "feedEveryDays": 21,
+      "repotAfterDays": 10,
+      "catSafety": "不要让猫大量啃食"
+    },
+    {
+      "id": "plumbago",
+      "name": "蓝雪花",
+      "waterEveryDays": 2,
+      "feedEveryDays": 10,
+      "repotAfterDays": 45,
+      "catSafety": "建议隔离，避免啃食和接触汁液"
+    }
+  ]
+}
