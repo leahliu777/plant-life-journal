@@ -1,11 +1,34 @@
-const STORAGE_KEY = "plant-life-journal-v2";
+const STORAGE_KEY = "plant-life-journal-v3";
 const MS_DAY = 86400000;
 const SHENZHEN = { latitude: 22.5431, longitude: 114.0579 };
 
 const plantProfiles = [
   {
-    id: "trachelospermum",
-    name: "络石",
+    id: "calathea",
+    name: "青苹果竹芋",
+    latin: "Goeppertia orbifolia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Calathea_orbifolia_0zz.jpg",
+    color: "#6fa55a",
+    waterEvery: 2,
+    feedEvery: 21,
+    repotAfter: 30,
+    sun: "明亮散射光",
+    water: "2 天检查",
+    temp: "18-32°C",
+    soil: "保湿透气泥炭土",
+    description:
+      "叶片圆润、银绿色条纹明显，适合做阳台的清爽叶景。它喜欢稳定湿度和散射光，高温天要避开直晒。",
+    badges: [
+      ["猫咪安全", "safe"],
+      ["喜湿润", "info"],
+      ["忌暴晒", "warn"],
+    ],
+    repot: "到货缓苗 3-4 周后观察根系，根满盆再换大一号盆；夏季移盆后保持阴凉通风。",
+    tips: ["用过滤水或晾过的水更稳", "叶缘焦枯多半是干燥或强光", "盆土微潮但不要积水"],
+  },
+  {
+    id: "star-jasmine",
+    name: "白色风车茉莉",
     latin: "Trachelospermum jasminoides",
     image: "https://commons.wikimedia.org/wiki/Special:FilePath/Trachelospermum_jasminoides_flower_-_20080828-01.jpg",
     color: "#9180bd",
@@ -17,7 +40,7 @@ const plantProfiles = [
     temp: "15-38°C",
     soil: "花卉土 + 珍珠岩",
     description:
-      "常绿攀援植物，白色风车形小花，香气清甜。更适合养猫家庭，可作为法式阳台的香气花墙。",
+      "常绿攀援植物，白色风车形小花，香气清甜。适合养成法式阳台的香气花墙，也能和铁艺爬架搭配。",
     badges: [
       ["猫咪安全", "safe"],
       ["香气浓郁", "info"],
@@ -28,7 +51,7 @@ const plantProfiles = [
   },
   {
     id: "dendrobium",
-    name: "泼墨石斛",
+    name: "黄金羚羊泼墨石斛",
     latin: "Dendrobium sp.",
     image:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Dendrobium%20nobile%20-%20flower%20view%2001.jpg",
@@ -41,7 +64,7 @@ const plantProfiles = [
     temp: "18-32°C",
     soil: "水苔或树皮",
     description:
-      "观赏石斛兰，花色像白底紫色泼墨。它不是普通土培植物，根系需要透气，热天要遮午后直射。",
+      "观赏石斛兰，花色带泼墨感，株型精致。它不是普通土培植物，根系需要透气，热天要遮午后直射。",
     badges: [
       ["猫咪安全", "safe"],
       ["忌强直射", "warn"],
@@ -97,30 +120,6 @@ const plantProfiles = [
     repot: "到货 1-2 周后换 18-20cm 宽盆，单独种植，可顺手扦插备用苗。",
     tips: ["勤摘心，越摘越密", "开花前剪掉花穗", "大量摄入仍可能让猫肠胃不适"],
   },
-  {
-    id: "plumbago",
-    name: "蓝雪花",
-    latin: "Plumbago auriculata",
-    image:
-      "https://commons.wikimedia.org/wiki/Special:FilePath/Bela-em%C3%ADlia%20%28Plumbago%20auriculata%29.jpg",
-    color: "#6f9dcb",
-    waterEvery: 2,
-    feedEvery: 10,
-    repotAfter: 45,
-    sun: "全日照",
-    water: "1-2 天/次",
-    temp: "10-40°C",
-    soil: "排水良好花卉土",
-    description:
-      "天蓝色小花成簇开放，耐热、耐晒、花期长，是热区阳台最容易获得花量的植物之一。",
-    badges: [
-      ["猫咪需隔离", "warn"],
-      ["极耐热", "safe"],
-      ["长花期", "info"],
-    ],
-    repot: "稳定开花后再换盆更稳，优先等入秋或气温低于 30°C，盆径 20-25cm。",
-    tips: ["越晒花越多", "花后轻剪促分枝", "花朵有黏性，远离猫活动区"],
-  },
 ];
 
 const actionTypes = ["浇水", "施肥", "修剪", "移盆", "观察检查", "扦插繁殖", "病虫害处理", "调整位置"];
@@ -128,17 +127,17 @@ const dailyTips = [
   "热天早上浇水，避开中午高温时段，植物更容易吸收。",
   "记录一次黄叶、花苞或新芽，比凭感觉养花可靠很多。",
   "施肥当天把盆土和肥料放到猫够不到的位置。",
-  "蓝雪花和络石负责阳台的花量与香气，石斛负责精致感。",
+  "风车茉莉负责阳台香气，竹芋和石斛负责精致层次。",
 ];
 
 const guides = [
   {
     title: "浇水的正确方式",
-    body: "手指插入土壤约 2cm，干了再浇。浇水要浇透，直到盆底出水，再倒掉托盘积水。泼墨石斛看植料，不看普通土表。",
+    body: "手指插入土壤约 2cm，干了再浇。浇水要浇透，直到盆底出水，再倒掉托盘积水。黄金羚羊泼墨石斛看植料，不看普通土表。",
   },
   {
     title: "高温应对策略",
-    body: "30°C 以上开启热天模式，薄荷和蓝雪花更频繁检查。35°C 以上时，石斛与薄荷避开午后直射，清晨是最佳养护时间。",
+    body: "30°C 以上开启热天模式，薄荷、青苹果竹芋和风车茉莉更频繁检查。35°C 以上时，石斛、竹芋与薄荷避开午后直射，清晨是最佳养护时间。",
   },
   {
     title: "移盆原则",
@@ -146,7 +145,7 @@ const guides = [
   },
   {
     title: "猫咪安全",
-    body: "ASPCA 将 Star Jasmine 络石列为对猫非毒性植物；柠檬和蓝雪花仍建议隔离，薄荷不要让猫大量啃食。",
+    body: "青苹果竹芋、风车茉莉和石斛相对适合养猫家庭；柠檬仍建议隔离，薄荷不要让猫大量啃食。",
   },
 ];
 

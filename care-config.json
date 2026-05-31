@@ -12,16 +12,24 @@
   },
   "plants": [
     {
-      "id": "trachelospermum",
-      "name": "络石",
+      "id": "calathea",
+      "name": "青苹果竹芋",
+      "waterEveryDays": 2,
+      "feedEveryDays": 21,
+      "repotAfterDays": 30,
+      "catSafety": "相对安全；避免猫长期啃叶片"
+    },
+    {
+      "id": "star-jasmine",
+      "name": "白色风车茉莉",
       "waterEveryDays": 2,
       "feedEveryDays": 14,
       "repotAfterDays": 21,
-      "catSafety": "ASPCA 非毒性；仍不建议长期啃食"
+      "catSafety": "相对安全；仍不建议长期啃食"
     },
     {
       "id": "dendrobium",
-      "name": "泼墨石斛",
+      "name": "黄金羚羊泼墨石斛",
       "waterEveryDays": 3,
       "feedEveryDays": 21,
       "repotAfterDays": 60,
@@ -42,14 +50,6 @@
       "feedEveryDays": 21,
       "repotAfterDays": 10,
       "catSafety": "不要让猫大量啃食"
-    },
-    {
-      "id": "plumbago",
-      "name": "蓝雪花",
-      "waterEveryDays": 2,
-      "feedEveryDays": 10,
-      "repotAfterDays": 45,
-      "catSafety": "建议隔离，避免啃食和接触汁液"
     }
   ]
 }
