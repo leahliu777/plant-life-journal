@@ -1,4 +1,4 @@
-const CACHE_NAME = "plant-life-journal-v4";
+const CACHE_NAME = "plant-life-journal-v5";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg", "./care-config.json"];
 
 self.addEventListener("install", (event) => {

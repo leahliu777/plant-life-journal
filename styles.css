@@ -925,6 +925,7 @@ h1 {
 
 .bottom-nav {
   position: absolute;
+  z-index: 20;
   right: 18px;
   bottom: max(12px, env(safe-area-inset-bottom));
   left: 18px;
