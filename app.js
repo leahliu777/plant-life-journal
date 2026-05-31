@@ -170,6 +170,8 @@ const els = {
   plantList: document.querySelector("#plantList"),
   calendarGrid: document.querySelector("#calendarGrid"),
   monthLabel: document.querySelector("#monthLabel"),
+  statsMonthLabel: document.querySelector("#statsMonthLabel"),
+  monthStats: document.querySelector("#monthStats"),
   selectedDateLabel: document.querySelector("#selectedDateLabel"),
   selectedDateSub: document.querySelector("#selectedDateSub"),
   selectedPlan: document.querySelector("#selectedPlan"),
@@ -239,6 +241,20 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const skip = event.target.closest("[data-skip]");
+  if (skip) {
+    skipTask(skip.dataset.plantId, skip.dataset.type);
+    toast("已跳过今天的提醒。");
+    return;
+  }
+
+  const postpone = event.target.closest("[data-postpone]");
+  if (postpone) {
+    postponeTask(postpone.dataset.plantId, postpone.dataset.type);
+    toast("已推迟到明天。");
+    return;
+  }
+
   const day = event.target.closest("[data-day]");
   if (day) {
     selectedDate = day.dataset.day;
@@ -259,7 +275,9 @@ document.addEventListener("change", (event) => {
   const plant = state.plants.find((item) => item.id === input.dataset.plantId);
   if (!plant) return;
   const field = input.dataset.field;
-  if (field === "waterEvery" || field === "feedEvery") {
+  if (field === "repotAfter") {
+    plant[field] = clamp(Number(input.value), 1, 180);
+  } else if (field === "waterEvery" || field === "feedEvery") {
     plant[field] = clamp(Number(input.value), 1, 90);
   } else {
     plant[field] = input.value || toISODate(new Date());
@@ -280,6 +298,7 @@ function render() {
   renderToday();
   renderPlants();
   renderCalendar();
+  renderMonthStats();
   renderSelectedDay();
   renderSettings();
 }
@@ -317,7 +336,11 @@ function renderToday() {
         <p>${task.label}</p>
         <span class="task-meta">${task.copy}</span>
       </div>
-      <button class="check-button" type="button" aria-label="完成${plant.name}${task.type}" data-done="1" data-plant-id="${plant.id}" data-type="${task.type}"></button>
+      <div class="task-buttons">
+        <button class="check-button" type="button" aria-label="完成${plant.name}${task.type}" data-done="1" data-plant-id="${plant.id}" data-type="${task.type}"></button>
+        <button class="mini-action" type="button" data-skip="1" data-plant-id="${plant.id}" data-type="${task.type}">跳过</button>
+        <button class="mini-action" type="button" data-postpone="1" data-plant-id="${plant.id}" data-type="${task.type}">推迟</button>
+      </div>
     `;
     els.taskList.append(card);
   });
@@ -414,12 +437,17 @@ function renderPlants() {
           <span class="pill feed">下次施肥 ${relativeText(feedDue)}</span>
           <span class="pill repot">移盆 ${repotStatus(plant)}</span>
         </div>
-        <div class="quick-edit">
+        <details class="param-editor">
+          <summary>编辑养护参数</summary>
+          <div class="quick-edit">
           <label class="mini-field">浇水间隔
             <input data-field="waterEvery" data-plant-id="${plant.id}" type="number" min="1" max="30" value="${plant.waterEvery}">
           </label>
           <label class="mini-field">施肥间隔
             <input data-field="feedEvery" data-plant-id="${plant.id}" type="number" min="1" max="90" value="${plant.feedEvery}">
+          </label>
+          <label class="mini-field">移盆观察/天
+            <input data-field="repotAfter" data-plant-id="${plant.id}" type="number" min="1" max="180" value="${plant.repotAfter}">
           </label>
           <label class="mini-field">上次浇水
             <input data-field="lastWatered" data-plant-id="${plant.id}" type="date" value="${plant.lastWatered}">
@@ -427,7 +455,8 @@ function renderPlants() {
           <label class="mini-field">上次施肥
             <input data-field="lastFed" data-plant-id="${plant.id}" type="date" value="${plant.lastFed}">
           </label>
-        </div>
+          </div>
+        </details>
       </div>
     `;
     els.plantList.append(card);
@@ -468,7 +497,7 @@ function renderCalendar() {
 
 function renderDayButton(date, otherMonth) {
   const iso = toISODate(date);
-  const logs = state.logs.filter((log) => log.date === iso);
+  const logs = state.logs.filter((log) => log.date === iso && isDoneAction(log.action));
   const plans = getPlansForDate(iso);
   const button = document.createElement("button");
   button.type = "button";
@@ -480,11 +509,36 @@ function renderDayButton(date, otherMonth) {
     iso === selectedDate ? "selected" : "",
   ].join(" ");
   const marks = [
-    ...logs.slice(0, 2).map(() => '<i class="mark"></i>'),
-    ...plans.slice(0, 2).map(() => '<i class="mark plan"></i>'),
+    ...logs.slice(0, 2).map(() => '<i class="mark log" aria-label="已完成"></i>'),
+    ...plans.slice(0, 2).map(() => '<i class="mark plan" aria-label="计划中"></i>'),
   ].join("");
   button.innerHTML = `<span>${date.getDate()}</span><span class="marks">${marks}</span>`;
   els.calendarGrid.append(button);
+}
+
+function renderMonthStats() {
+  const year = visibleMonth.getFullYear();
+  const month = visibleMonth.getMonth();
+  const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const monthLogs = state.logs.filter((log) => log.date.startsWith(monthPrefix));
+  const plannedCount = countPlansInMonth(year, month);
+  const doneCount = monthLogs.filter((log) => isDoneAction(log.action)).length;
+  const waterCount = monthLogs.filter((log) => isDoneAction(log.action) && log.action.includes("浇水")).length;
+  const feedCount = monthLogs.filter((log) => isDoneAction(log.action) && log.action.includes("施肥")).length;
+  const completion = plannedCount ? Math.min(100, Math.round((doneCount / plannedCount) * 100)) : 0;
+  const plantCounts = state.plants.map((plant) => ({
+    plant,
+    count: monthLogs.filter((log) => log.plantId === plant.id && isDoneAction(log.action)).length,
+  }));
+  const mostCared = plantCounts.reduce((best, item) => (item.count > best.count ? item : best), { plant: null, count: 0 });
+
+  els.statsMonthLabel.textContent = `${month + 1}月`;
+  els.monthStats.innerHTML = `
+    <div class="stat-card"><small>完成率</small><strong>${completion}%</strong></div>
+    <div class="stat-card"><small>浇水</small><strong>${waterCount} 次</strong></div>
+    <div class="stat-card"><small>施肥</small><strong>${feedCount} 次</strong></div>
+    <div class="stat-card"><small>最常照料</small><strong>${mostCared.plant ? mostCared.plant.name : "暂无"}</strong></div>
+  `;
 }
 
 function renderSelectedDay() {
@@ -583,6 +637,15 @@ function getPlansForDate(iso) {
   return plans;
 }
 
+function countPlansInMonth(year, month) {
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let count = 0;
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    count += getPlansForDate(toISODate(new Date(year, month, day))).length;
+  }
+  return count;
+}
+
 function markDone(plantId, type) {
   const plant = findPlant(plantId);
   if (!plant) return;
@@ -596,6 +659,45 @@ function markDone(plantId, type) {
     plantId,
     action: actionLabel(type),
     note: "由今日任务完成",
+  });
+  state.logs = state.logs.slice(0, 120);
+  persist();
+  render();
+}
+
+function skipTask(plantId, type) {
+  const plant = findPlant(plantId);
+  if (!plant) return;
+  const todayISO = toISODate(new Date());
+  if (type === "water") plant.lastWatered = todayISO;
+  if (type === "feed") plant.lastFed = todayISO;
+  if (type === "repot") plant.repotAfter = daysSinceArrival() + 30;
+  state.logs.unshift({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    date: todayISO,
+    plantId,
+    action: `跳过${actionLabel(type)}`,
+    note: "今天状态良好，跳过本次提醒",
+  });
+  state.logs = state.logs.slice(0, 120);
+  persist();
+  render();
+}
+
+function postponeTask(plantId, type) {
+  const plant = findPlant(plantId);
+  if (!plant) return;
+  const today = new Date();
+  const todayISO = toISODate(today);
+  if (type === "water") plant.lastWatered = toISODate(addDays(today, 1 - waterInterval(plant)));
+  if (type === "feed") plant.lastFed = toISODate(addDays(today, 1 - plant.feedEvery));
+  if (type === "repot") plant.repotAfter = daysSinceArrival() + 1;
+  state.logs.unshift({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    date: todayISO,
+    plantId,
+    action: `推迟${actionLabel(type)}`,
+    note: "推迟 1 天提醒",
   });
   state.logs = state.logs.slice(0, 120);
   persist();
@@ -776,6 +878,19 @@ function actionLabel(type) {
   if (type === "water") return "浇水";
   if (type === "feed") return "施肥";
   return "移盆观察";
+}
+
+function isDoneAction(action) {
+  return !action.startsWith("跳过") && !action.startsWith("推迟");
+}
+
+function daysSinceArrival() {
+  return Math.max(0, daysBetween(parseDate(state.arrivalDate), new Date()));
+}
+
+function daysBetween(start, end) {
+  const diff = startOfDay(end).getTime() - startOfDay(start).getTime();
+  return Math.round(diff / MS_DAY);
 }
 
 function findPlant(id) {
