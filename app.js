@@ -7,7 +7,7 @@ const plantProfiles = [
     id: "calathea",
     name: "青苹果竹芋",
     latin: "Goeppertia orbifolia",
-    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Calathea_orbifolia_0zz.jpg",
+    image: "./assets/calathea-orbifolia.svg",
     color: "#6fa55a",
     waterEvery: 2,
     feedEvery: 21,

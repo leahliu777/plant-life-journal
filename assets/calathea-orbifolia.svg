@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">青苹果竹芋</title>
+  <desc id="desc">银绿色圆叶青苹果竹芋插画</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="68%">
+      <stop offset="0" stop-color="#fffdf4"/>
+      <stop offset="1" stop-color="#e7d9bd"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9ebc7"/>
+      <stop offset="0.52" stop-color="#83ad68"/>
+      <stop offset="1" stop-color="#426b33"/>
+    </linearGradient>
+    <linearGradient id="leafLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1f7df"/>
+      <stop offset="1" stop-color="#aacb89"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#3f3a25" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="320" height="320" rx="42" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <path d="M158 276c4-54 6-102 3-148" fill="none" stroke="#5f8737" stroke-width="8" stroke-linecap="round"/>
+    <path d="M154 170c-40-70-114-78-118-19-4 57 66 94 118 19Z" fill="url(#leaf)"/>
+    <path d="M164 165c27-83 102-108 124-52 20 53-44 111-124 52Z" fill="url(#leaf)"/>
+    <path d="M154 130c-9-80 40-130 88-94 45 34 13 116-88 94Z" fill="url(#leafLight)"/>
+    <path d="M149 182c-16-75-76-122-116-82-38 38 2 116 116 82Z" fill="url(#leafLight)"/>
+    <path d="M171 203c55-53 130-41 137 15 7 54-75 80-137-15Z" fill="url(#leaf)"/>
+  </g>
+  <g fill="none" stroke="#f4f3d7" stroke-width="3" stroke-linecap="round" opacity="0.72">
+    <path d="M52 145c35 8 67 20 96 37"/>
+    <path d="M178 156c33-17 65-31 96-42"/>
+    <path d="M163 121c23-26 47-50 72-75"/>
+    <path d="M55 100c27 30 57 56 92 79"/>
+    <path d="M186 210c34 5 67 9 102 9"/>
+  </g>
+  <ellipse cx="160" cy="286" rx="72" ry="16" fill="#5a3d23" opacity="0.18"/>
+</svg>
