@@ -635,7 +635,8 @@ h1 {
 }
 
 .mini-field input,
-.field-row input {
+.field-row input,
+.readonly-row strong {
   width: 100%;
   min-height: 36px;
   border: 1px solid rgba(42, 37, 28, 0.12);
@@ -643,6 +644,13 @@ h1 {
   padding: 0 10px;
   color: var(--ink);
   background: rgba(255, 252, 244, 0.84);
+}
+
+.readonly-row strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
 }
 
 .calendar-card {

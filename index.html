@@ -120,14 +120,14 @@
               </span>
               <input id="heatMode" type="checkbox" />
             </label>
-            <label class="field-row">
+            <div class="field-row readonly-row">
               <span>植物到家日期</span>
-              <input id="arrivalDate" type="date" />
-            </label>
-            <label class="field-row">
+              <strong id="arrivalDateDisplay"></strong>
+            </div>
+            <div class="field-row readonly-row">
               <span>每日提醒时间</span>
-              <input id="reminderTime" type="time" />
-            </label>
+              <strong id="reminderTimeDisplay"></strong>
+            </div>
             <div id="guideList" class="guide-list"></div>
             <button class="danger-button" id="resetBtn" type="button">重置所有记录</button>
           </div>

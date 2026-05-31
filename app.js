@@ -1,6 +1,10 @@
 const STORAGE_KEY = "plant-life-journal-v3";
 const MS_DAY = 86400000;
 const SHENZHEN = { latitude: 22.5431, longitude: 114.0579 };
+const CARE_SETTINGS = {
+  arrivalDate: "2026-05-31",
+  reminderTime: "08:00",
+};
 
 const plantProfiles = [
   {
@@ -178,8 +182,8 @@ const els = {
   logList: document.querySelector("#logList"),
   guideList: document.querySelector("#guideList"),
   heatMode: document.querySelector("#heatMode"),
-  arrivalDate: document.querySelector("#arrivalDate"),
-  reminderTime: document.querySelector("#reminderTime"),
+  arrivalDateDisplay: document.querySelector("#arrivalDateDisplay"),
+  reminderTimeDisplay: document.querySelector("#reminderTimeDisplay"),
   notifyBtn: document.querySelector("#notifyBtn"),
   completeAllBtn: document.querySelector("#completeAllBtn"),
   prevMonthBtn: document.querySelector("#prevMonthBtn"),
@@ -217,17 +221,6 @@ els.heatMode.addEventListener("change", () => {
   state.heatMode = els.heatMode.checked;
   persist();
   render();
-});
-
-els.arrivalDate.addEventListener("change", () => {
-  state.arrivalDate = els.arrivalDate.value || toISODate(new Date());
-  persist();
-  render();
-});
-
-els.reminderTime.addEventListener("change", () => {
-  state.reminderTime = els.reminderTime.value || "08:00";
-  persist();
 });
 
 els.notifyBtn.addEventListener("click", requestNotification);
@@ -311,12 +304,18 @@ function renderHeader() {
 
 function renderToday() {
   const tasks = getDueTasks();
-  const weather = state.weather || fallbackWeather();
-  els.temperatureText.textContent = `${Math.round(weather.temperature)}°C`;
-  els.humidityText.textContent = `${Math.round(weather.humidity)}%`;
-  els.airText.textContent = weather.airQuality;
+  const weather = state.weather;
+  const hasLiveTemperature = Number.isFinite(weather?.temperature);
+  const hasLiveHumidity = Number.isFinite(weather?.humidity);
+  els.temperatureText.textContent = hasLiveTemperature ? `${Math.round(weather.temperature)}°C` : "--";
+  els.humidityText.textContent = hasLiveHumidity ? `${Math.round(weather.humidity)}%` : "--";
+  els.airText.textContent = weather?.airQuality || "读取中";
   els.dueCount.textContent = tasks.length;
-  els.todayTitle.textContent = tasks.length ? weatherHeadline(weather.temperature) : "阳台状态稳定，适合观察记录";
+  els.todayTitle.textContent = tasks.length
+    ? weatherHeadline(hasLiveTemperature ? weather.temperature : 28)
+    : hasLiveTemperature
+      ? "阳台状态稳定，适合观察记录"
+      : "正在读取深圳天气";
   els.todayCopy.textContent = tasks.length ? `有 ${tasks.length} 项任务等待完成，优先处理浇水，再处理施肥或移盆观察。` : "今天没有硬性任务，可以拍一张植物状态照，记下新芽、花苞和盆土湿度。";
   els.dailyTip.textContent = dailyTips[new Date().getDate() % dailyTips.length];
   els.taskList.innerHTML = "";
@@ -349,7 +348,7 @@ function renderToday() {
 
 async function loadWeather() {
   const params = `latitude=${SHENZHEN.latitude}&longitude=${SHENZHEN.longitude}&timezone=Asia%2FShanghai`;
-  const forecastUrl = `https://api.open-meteo.com/v1/forecast?${params}&current=temperature_2m,relative_humidity_2m,weather_code`;
+  const forecastUrl = `https://api.open-meteo.com/v1/forecast?${params}&models=cma_grapes_global&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code`;
   const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${params}&current=us_aqi`;
 
   try {
@@ -369,6 +368,7 @@ async function loadWeather() {
     state.weather = {
       temperature: Number.isFinite(current.temperature_2m) ? current.temperature_2m : fallbackWeather().temperature,
       humidity: Number.isFinite(current.relative_humidity_2m) ? current.relative_humidity_2m : fallbackWeather().humidity,
+      apparentTemperature: Number.isFinite(current.apparent_temperature) ? current.apparent_temperature : null,
       code: current.weather_code ?? null,
       airQuality: formatAirQuality(air.us_aqi),
       updatedAt: new Date().toISOString(),
@@ -383,9 +383,9 @@ async function loadWeather() {
 
 function fallbackWeather() {
   return {
-    temperature: state.heatMode ? 32 : 28,
-    humidity: 60,
-    airQuality: "良好",
+    temperature: null,
+    humidity: null,
+    airQuality: "暂缺",
     code: null,
     updatedAt: null,
   };
@@ -572,8 +572,8 @@ function renderSelectedDay() {
 
 function renderSettings() {
   els.heatMode.checked = state.heatMode;
-  els.arrivalDate.value = state.arrivalDate;
-  els.reminderTime.value = state.reminderTime;
+  els.arrivalDateDisplay.textContent = formatDate(parseDate(state.arrivalDate));
+  els.reminderTimeDisplay.textContent = state.reminderTime;
   els.notifyBtn.classList.toggle("is-on", state.notificationEnabled);
   els.guideList.innerHTML = guides
     .map(
@@ -808,8 +808,8 @@ function defaultState() {
   const todayISO = toISODate(new Date());
   return {
     heatMode: true,
-    arrivalDate: todayISO,
-    reminderTime: "08:00",
+    arrivalDate: CARE_SETTINGS.arrivalDate,
+    reminderTime: CARE_SETTINGS.reminderTime,
     notificationEnabled: false,
     plants: plantProfiles.map((plant) => ({
       ...plant,
@@ -829,6 +829,8 @@ function loadState() {
     return {
       ...base,
       ...parsed,
+      arrivalDate: CARE_SETTINGS.arrivalDate,
+      reminderTime: CARE_SETTINGS.reminderTime,
       plants: plantProfiles.map((profile) => ({
         ...profile,
         ...(parsed.plants || []).find((plant) => plant.id === profile.id),
