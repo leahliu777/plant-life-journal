@@ -10,11 +10,6 @@
     "forecastUrl": "https://api.open-meteo.com/v1/forecast?latitude=22.5431&longitude=114.0579&timezone=Asia%2FShanghai&current=temperature_2m,relative_humidity_2m,weather_code",
     "airQualityUrl": "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=22.5431&longitude=114.0579&timezone=Asia%2FShanghai&current=us_aqi"
   },
-  "push": {
-    "recommendedTime": "08:00",
-    "barkMessageTemplate": "今天有 {count} 个阳台养护任务：{tasks}",
-    "notes": "Bark 推送建议由外部定时 agent 执行。静态网页本身不能可靠后台定时推送。"
-  },
   "plants": [
     {
       "id": "trachelospermum",
