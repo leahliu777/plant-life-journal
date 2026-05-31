@@ -298,9 +298,9 @@ h1 {
 
 .task-card {
   display: grid;
-  grid-template-columns: 58px 1fr 34px;
+  grid-template-columns: 58px 1fr;
   gap: 12px;
-  align-items: center;
+  align-items: start;
   padding: 9px 0;
   border-bottom: 1px solid rgba(223, 207, 184, 0.55);
 }
@@ -338,6 +338,25 @@ h1 {
   border: 1.5px solid rgba(42, 37, 28, 0.38);
   border-radius: 50%;
   background: transparent;
+}
+
+.task-buttons {
+  display: flex;
+  grid-column: 2;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: -3px;
+}
+
+.mini-action {
+  min-height: 30px;
+  border: 1px solid rgba(42, 37, 28, 0.12);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: rgba(255, 250, 242, 0.7);
+  font-size: 0.75rem;
 }
 
 .notebook-tip {
@@ -485,6 +504,25 @@ h1 {
   margin-top: 10px;
 }
 
+.param-editor {
+  margin-top: 12px;
+  border-radius: 14px;
+  background: rgba(247, 239, 223, 0.68);
+}
+
+.param-editor summary {
+  min-height: 40px;
+  padding: 10px 12px;
+  color: var(--sage);
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+
+.param-editor .quick-edit {
+  margin-top: 0;
+  padding: 0 10px 12px;
+}
+
 .mini-field {
   display: grid;
   gap: 5px;
@@ -557,6 +595,7 @@ h1 {
 
 .plan-dot {
   border: 1.5px solid var(--sky);
+  background: transparent;
 }
 
 .calendar-grid {
@@ -606,14 +645,47 @@ h1 {
 }
 
 .mark {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--sage);
 }
 
 .mark.plan {
-  background: var(--sky);
+  border: 1.4px solid var(--sky);
+  background: transparent;
+}
+
+.mark.log {
+  background: var(--sage);
+}
+
+.stats-block {
+  margin-top: 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.stat-card {
+  min-height: 68px;
+  border-radius: 14px;
+  padding: 11px;
+  background: rgba(247, 239, 223, 0.78);
+}
+
+.stat-card small {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.stat-card strong {
+  font-size: 1.05rem;
 }
 
 .log-block {
