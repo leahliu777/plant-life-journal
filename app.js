@@ -159,6 +159,7 @@ let modalAction = "浇水";
 
 const els = {
   dateLine: document.querySelector("#dateLine"),
+  greetingTitle: document.querySelector("#greetingTitle"),
   todayTitle: document.querySelector("#todayTitle"),
   todayCopy: document.querySelector("#todayCopy"),
   dueCount: document.querySelector("#dueCount"),
@@ -305,6 +306,7 @@ function render() {
 
 function renderHeader() {
   const now = new Date();
+  els.greetingTitle.textContent = `${greeting(now)}，Leah`;
   els.dateLine.textContent = `${now.getMonth() + 1}月${now.getDate()}日 · ${weekdayName(now)} · ${seasonName(now)}`;
 }
 
@@ -928,6 +930,14 @@ function formatDate(date) {
 
 function weekdayName(date) {
   return ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"][date.getDay()];
+}
+
+function greeting(date) {
+  const hour = date.getHours();
+  if (hour < 6) return "夜深了";
+  if (hour < 12) return "上午好";
+  if (hour < 18) return "下午好";
+  return "晚上好";
 }
 
 function seasonName(date) {
