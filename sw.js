@@ -1,4 +1,4 @@
-const CACHE_NAME = "plant-life-journal-v7";
+const CACHE_NAME = "plant-life-journal-v8";
 const APP_FILES = [
   "./",
   "./index.html",

@@ -161,6 +161,8 @@ let modalPlants = [];
 let modalAction = "浇水";
 
 const els = {
+  app: document.querySelector("#app"),
+  appContent: document.querySelector(".app-content"),
   dateLine: document.querySelector("#dateLine"),
   greetingTitle: document.querySelector("#greetingTitle"),
   todayTitle: document.querySelector("#todayTitle"),
@@ -262,23 +264,6 @@ document.addEventListener("click", (event) => {
   }
 });
 
-document.addEventListener("change", (event) => {
-  const input = event.target.closest("[data-field]");
-  if (!input) return;
-  const plant = state.plants.find((item) => item.id === input.dataset.plantId);
-  if (!plant) return;
-  const field = input.dataset.field;
-  if (field === "repotAfter") {
-    plant[field] = clamp(Number(input.value), 1, 180);
-  } else if (field === "waterEvery" || field === "feedEvery") {
-    plant[field] = clamp(Number(input.value), 1, 90);
-  } else {
-    plant[field] = input.value || toISODate(new Date());
-  }
-  persist();
-  render();
-});
-
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
@@ -300,6 +285,134 @@ function renderHeader() {
   const now = new Date();
   els.greetingTitle.textContent = `${greeting(now)}，Leah`;
   els.dateLine.textContent = `${now.getMonth() + 1}月${now.getDate()}日 · ${weekdayName(now)} · ${seasonName(now)}`;
+}
+
+function plantVisual(plant) {
+  const palette = {
+    calathea: ["#e8f3d4", "#8db06c", "#496f37"],
+    "star-jasmine": ["#f9f6e7", "#91a873", "#fffdf4"],
+    dendrobium: ["#fff7dc", "#9b6fb4", "#f5eed1"],
+    lemon: ["#e5f1c9", "#6f9f48", "#e0ad2f"],
+    mint: ["#d9f1dc", "#54a874", "#2f7653"],
+  };
+  const [light, mid, accent] = palette[plant.id] || ["#e8f3d4", "#8db06c", "#496f37"];
+  const drawings = {
+    calathea: `
+      <g fill="none" stroke="${accent}" stroke-width="8" stroke-linecap="round">
+        <path d="M160 282c2-58 2-104 0-154"/>
+        <path d="M160 174c-34-52-82-76-116-44"/>
+        <path d="M164 164c20-60 65-100 116-72"/>
+        <path d="M150 132c0-68 46-108 92-84"/>
+      </g>
+      <g fill="url(#leaf-${plant.id})">
+        <ellipse cx="97" cy="159" rx="70" ry="42" transform="rotate(23 97 159)"/>
+        <ellipse cx="223" cy="126" rx="76" ry="44" transform="rotate(-29 223 126)"/>
+        <ellipse cx="161" cy="95" rx="55" ry="76" transform="rotate(14 161 95)"/>
+        <ellipse cx="214" cy="216" rx="78" ry="40" transform="rotate(24 214 216)"/>
+        <ellipse cx="112" cy="222" rx="70" ry="38" transform="rotate(-24 112 222)"/>
+      </g>
+      <g fill="none" stroke="#f6f4df" stroke-width="4" stroke-linecap="round" opacity=".78">
+        <path d="M44 151c43 5 82 15 120 32"/>
+        <path d="M171 156c35-23 71-40 108-55"/>
+        <path d="M163 41c-1 45 0 86 2 122"/>
+        <path d="M146 224c-30-11-58-15-92-13"/>
+        <path d="M169 209c36 5 74 10 111 12"/>
+      </g>
+    `,
+    "star-jasmine": `
+      <path d="M58 244c72-104 80-166 204-180" fill="none" stroke="${mid}" stroke-width="10" stroke-linecap="round"/>
+      <path d="M88 222c24-30 52-50 85-60" fill="none" stroke="${mid}" stroke-width="8" stroke-linecap="round"/>
+      <g fill="${mid}">
+        <ellipse cx="89" cy="204" rx="34" ry="16" transform="rotate(-28 89 204)"/>
+        <ellipse cx="145" cy="155" rx="32" ry="15" transform="rotate(24 145 155)"/>
+        <ellipse cx="211" cy="103" rx="33" ry="16" transform="rotate(-31 211 103)"/>
+      </g>
+      <g fill="${accent}" stroke="#e5d6a8" stroke-width="2">
+        <path d="M194 135c17-18 34-18 42 2-20 7-34 5-42-2Z"/>
+        <path d="M202 129c-2-24 8-37 29-31-3 21-12 31-29 31Z"/>
+        <path d="M207 142c12 20 9 35-12 43-8-20-4-33 12-43Z"/>
+        <path d="M191 144c-24 1-36-10-29-30 20 4 30 14 29 30Z"/>
+        <circle cx="199" cy="137" r="6" fill="#d8a747"/>
+      </g>
+    `,
+    dendrobium: `
+      <g fill="none" stroke="${mid}" stroke-width="8" stroke-linecap="round">
+        <path d="M86 254c26-70 20-128-8-176"/>
+        <path d="M164 260c8-86 14-142 42-192"/>
+        <path d="M226 254c-8-72-8-124 22-168"/>
+      </g>
+      <g fill="${light}">
+        <ellipse cx="82" cy="88" rx="25" ry="14" transform="rotate(26 82 88)"/>
+        <ellipse cx="196" cy="86" rx="28" ry="15" transform="rotate(-25 196 86)"/>
+        <ellipse cx="244" cy="116" rx="24" ry="14" transform="rotate(30 244 116)"/>
+      </g>
+      <g fill="#fffdf4" stroke="${accent}" stroke-width="2">
+        <circle cx="104" cy="142" r="18"/>
+        <circle cx="176" cy="160" r="20"/>
+        <circle cx="230" cy="184" r="17"/>
+      </g>
+      <g fill="${accent}">
+        <circle cx="104" cy="142" r="5"/>
+        <circle cx="176" cy="160" r="6"/>
+        <circle cx="230" cy="184" r="5"/>
+      </g>
+    `,
+    lemon: `
+      <rect x="134" y="168" width="32" height="90" rx="14" fill="#7b5c37"/>
+      <g fill="url(#leaf-${plant.id})">
+        <ellipse cx="118" cy="126" rx="68" ry="43" transform="rotate(-25 118 126)"/>
+        <ellipse cx="198" cy="116" rx="72" ry="45" transform="rotate(28 198 116)"/>
+        <ellipse cx="155" cy="82" rx="52" ry="38" transform="rotate(-5 155 82)"/>
+        <ellipse cx="164" cy="176" rx="84" ry="46" transform="rotate(6 164 176)"/>
+      </g>
+      <g fill="${accent}" stroke="#bf8420" stroke-width="3">
+        <circle cx="108" cy="184" r="21"/>
+        <circle cx="220" cy="150" r="19"/>
+        <circle cx="177" cy="213" r="17"/>
+      </g>
+    `,
+    mint: `
+      <g fill="none" stroke="${accent}" stroke-width="8" stroke-linecap="round">
+        <path d="M162 264V88"/>
+        <path d="M162 176c-42-42-76-58-112-50"/>
+        <path d="M162 150c42-44 76-60 112-48"/>
+        <path d="M162 222c-34-28-66-38-98-30"/>
+        <path d="M162 210c38-28 72-38 104-26"/>
+      </g>
+      <g fill="url(#leaf-${plant.id})">
+        <ellipse cx="90" cy="132" rx="44" ry="24" transform="rotate(20 90 132)"/>
+        <ellipse cx="232" cy="108" rx="48" ry="25" transform="rotate(-22 232 108)"/>
+        <ellipse cx="96" cy="196" rx="42" ry="22" transform="rotate(-18 96 196)"/>
+        <ellipse cx="226" cy="194" rx="44" ry="23" transform="rotate(19 226 194)"/>
+        <ellipse cx="162" cy="88" rx="30" ry="42"/>
+      </g>
+      <g fill="none" stroke="#e9f8df" stroke-width="3" stroke-linecap="round" opacity=".85">
+        <path d="M73 132c22 4 43 5 63 1"/>
+        <path d="M197 110c23 0 44-4 65-11"/>
+        <path d="M64 199c22-4 43-7 64-7"/>
+        <path d="M194 190c24 4 44 8 64 12"/>
+      </g>
+    `,
+  };
+
+  return `
+    <svg class="plant-visual" viewBox="0 0 320 320" role="img" aria-label="${plant.name}">
+      <defs>
+        <radialGradient id="bg-${plant.id}" cx="48%" cy="34%" r="72%">
+          <stop stop-color="#fffdf4"/>
+          <stop offset="1" stop-color="#dfd0b5"/>
+        </radialGradient>
+        <linearGradient id="leaf-${plant.id}" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="${light}"/>
+          <stop offset=".58" stop-color="${mid}"/>
+          <stop offset="1" stop-color="${accent}"/>
+        </linearGradient>
+      </defs>
+      <rect width="320" height="320" rx="44" fill="url(#bg-${plant.id})"/>
+      ${drawings[plant.id] || drawings.calathea}
+      <ellipse cx="160" cy="278" rx="72" ry="15" fill="#6f5738" opacity=".16"/>
+    </svg>
+  `;
 }
 
 function renderToday() {
@@ -330,7 +443,7 @@ function renderToday() {
     const card = document.createElement("article");
     card.className = "task-card";
     card.innerHTML = `
-      <img src="${plant.image}" alt="${plant.name}" loading="lazy">
+      ${plantVisual(plant)}
       <div>
         <h3>${plant.name}</h3>
         <p>${task.label}</p>
@@ -415,7 +528,7 @@ function renderPlants() {
     card.className = "plant-card";
     card.innerHTML = `
       <div class="plant-head">
-        <img src="${plant.image}" alt="${plant.name}" loading="lazy">
+        ${plantVisual(plant)}
         <div>
           <h3>${plant.name}</h3>
           <p class="latin">${plant.latin}</p>
@@ -438,26 +551,16 @@ function renderPlants() {
           <span class="pill feed">下次施肥 ${relativeText(feedDue)}</span>
           <span class="pill repot">移盆 ${repotStatus(plant)}</span>
         </div>
-        <details class="param-editor">
-          <summary>编辑养护参数</summary>
-          <div class="quick-edit">
-          <label class="mini-field">浇水间隔
-            <input data-field="waterEvery" data-plant-id="${plant.id}" type="number" min="1" max="30" value="${plant.waterEvery}">
-          </label>
-          <label class="mini-field">施肥间隔
-            <input data-field="feedEvery" data-plant-id="${plant.id}" type="number" min="1" max="90" value="${plant.feedEvery}">
-          </label>
-          <label class="mini-field">移盆观察/天
-            <input data-field="repotAfter" data-plant-id="${plant.id}" type="number" min="1" max="180" value="${plant.repotAfter}">
-          </label>
-          <label class="mini-field">上次浇水
-            <input data-field="lastWatered" data-plant-id="${plant.id}" type="date" value="${plant.lastWatered}">
-          </label>
-          <label class="mini-field">上次施肥
-            <input data-field="lastFed" data-plant-id="${plant.id}" type="date" value="${plant.lastFed}">
-          </label>
+        <div class="param-summary">
+          <div class="summary-title">养护参数</div>
+          <div class="fact-grid">
+            <div><small>浇水间隔</small><strong>${waterInterval(plant)} 天</strong></div>
+            <div><small>施肥间隔</small><strong>${plant.feedEvery} 天</strong></div>
+            <div><small>移盆观察</small><strong>${plant.repotAfter} 天</strong></div>
+            <div><small>上次浇水</small><strong>${formatDate(parseDate(plant.lastWatered))}</strong></div>
+            <div><small>上次施肥</small><strong>${formatDate(parseDate(plant.lastFed))}</strong></div>
           </div>
-        </details>
+        </div>
       </div>
     `;
     els.plantList.append(card);
@@ -797,6 +900,8 @@ function switchView(view) {
   activeView = view;
   document.querySelectorAll(".view").forEach((node) => node.classList.toggle("is-active", node.id === `${view}View`));
   document.querySelectorAll(".nav-item").forEach((button) => button.classList.toggle("is-active", button.dataset.view === view));
+  els.app.scrollTop = 0;
+  els.appContent.scrollTop = 0;
 }
 
 function changeMonth(delta) {

@@ -377,7 +377,8 @@ h1 {
   border-bottom: 1px solid rgba(221, 201, 168, 0.45);
 }
 
-.task-card img {
+.task-card img,
+.task-card .plant-visual {
   width: 58px;
   height: 58px;
   border: 3px solid rgba(255, 252, 244, 0.82);
@@ -431,11 +432,11 @@ h1 {
 
 .notebook-tip {
   display: grid;
-  grid-template-columns: 1fr 122px;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(168px, 44%);
+  gap: 16px;
   align-items: stretch;
   margin-top: 16px;
-  padding: 14px;
+  padding: 16px;
   overflow: hidden;
 }
 
@@ -448,9 +449,12 @@ h1 {
 
 .notebook-tip img {
   width: 100%;
-  height: 104px;
-  border-radius: 18px;
+  aspect-ratio: 16 / 10;
+  height: auto;
+  min-height: 118px;
+  border-radius: 20px;
   object-fit: cover;
+  object-position: center top;
 }
 
 .notebook-tip {
@@ -493,7 +497,8 @@ h1 {
   padding: 14px;
 }
 
-.plant-head img {
+.plant-head img,
+.plant-head .plant-visual {
   width: 92px;
   height: 92px;
   border: 4px solid rgba(255, 252, 244, 0.9);
@@ -569,16 +574,17 @@ h1 {
 .care-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin: 12px 0;
+  gap: 12px;
+  margin: 18px 0;
 }
 
 .care-cell {
-  min-height: 64px;
-  padding: 10px;
+  min-height: 72px;
+  padding: 12px;
   border: 1px solid rgba(221, 201, 168, 0.38);
-  border-radius: 16px;
+  border-radius: 18px;
   background: rgba(255, 252, 244, 0.62);
+  box-shadow: 0 7px 16px rgba(75, 58, 32, 0.04);
 }
 
 .care-cell small {
@@ -592,46 +598,61 @@ h1 {
 }
 
 .repot-box {
-  padding: 11px;
-  border-radius: 16px;
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: 18px;
   color: #6f3f20;
   background: linear-gradient(135deg, rgba(248, 229, 183, 0.92), rgba(244, 215, 189, 0.7));
   font-size: 0.86rem;
   line-height: 1.55;
 }
 
-.quick-edit {
+.calendar-items {
+  margin-top: 14px;
+  row-gap: 9px;
+}
+
+.quick-edit,
+.fact-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   margin-top: 10px;
 }
 
-.param-editor {
-  margin-top: 12px;
-  border: 1px dashed rgba(95, 135, 55, 0.3);
-  border-radius: 16px;
-  background: rgba(226, 236, 207, 0.44);
+.param-summary {
+  margin-top: 18px;
+  border: 1px solid rgba(95, 135, 55, 0.22);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(247, 250, 235, 0.72);
 }
 
-.param-editor summary {
-  min-height: 40px;
-  padding: 10px 12px;
-  color: var(--sage);
-  cursor: pointer;
-  font-size: 0.88rem;
+.summary-title {
+  color: var(--sage-deep);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.param-editor .quick-edit {
-  margin-top: 0;
-  padding: 0 10px 12px;
+.fact-grid div {
+  min-height: 54px;
+  border-radius: 14px;
+  padding: 9px 10px;
+  background: rgba(255, 252, 244, 0.68);
 }
 
-.mini-field {
+.mini-field,
+.fact-grid small {
   display: grid;
   gap: 5px;
   color: var(--muted);
   font-size: 0.76rem;
+}
+
+.fact-grid strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.9rem;
 }
 
 .mini-field input,
@@ -815,9 +836,10 @@ h1 {
 }
 
 .pill {
-  padding: 6px 9px;
+  padding: 7px 11px;
   color: #2f3d4a;
   background: var(--sky-soft);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.44);
 }
 
 .pill.feed {
@@ -1133,6 +1155,7 @@ h1 {
 
   .care-grid,
   .quick-edit,
+  .fact-grid,
   .field-row {
     grid-template-columns: 1fr;
   }
